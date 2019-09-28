@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant javascriptApp
+    participant mineSweeperSdk
+    participant CoreApi
+    Note left of javascriptApp: Given:<br>Dimension: n x n<br>Mines: amount 
+    
+    javascriptApp->>mineSweeperSdk: Initialize Game
+    mineSweeperSdk->>CoreApi:  InitializeGame()
+    CoreApi-->>javascriptApp: response
+    
+    

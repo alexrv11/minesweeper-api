@@ -1,0 +1,13 @@
+{
+  "name": "minesweeper-game-docs",
+  "version": "1.0.0",
+  "description": "This project is to generate diagrams for the document",
+  "scripts": {
+    "build": "mmdc -i ./sequence-diagram.mmd -o ./diagrams/sequence-diagram.svg"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mermaid.cli": "^0.5.1"
+  }
+}
