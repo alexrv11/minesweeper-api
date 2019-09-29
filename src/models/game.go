@@ -16,6 +16,9 @@ func NewGame(dimension int) *Game {
 	table := make([][]*Cell, dimension)
 	for row := range table {
 		table[row] = make([]*Cell, dimension)
+		for column := range table[row] {
+			table[row][column] = &Cell{ IsBomb: false, ConnectedBomb: 0 }
+		}
 	}
 
 	return &Game{ Table: table, Dimension: dimension }

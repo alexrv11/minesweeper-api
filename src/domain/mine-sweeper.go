@@ -1,12 +1,16 @@
 package domain
 
-import "github.com/deviget/minesweeper-api/src/models"
+import (
+	"github.com/deviget/minesweeper-api/src/engine"
+	"github.com/deviget/minesweeper-api/src/models"
+)
 
-type MineSweeperEngine interface {
-	CreateGame(dimension, numberOfBomb int) (*models.Game, error)
+
+type MineSweeper struct { factory engine.Factory}
+
+func NewMinesweeper(factory engine.Factory) engine.MineSweeper {
+	return &MineSweeper{factory:factory}
 }
-
-type MineSweeper struct { factory FactoryEngine}
 
 //CreateGame creates a Game instance given dimension of the table n x n and the number of bomb that is going to be added in the table
 func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models.Game, error) {
@@ -14,9 +18,9 @@ func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models
 
 	//Mining bombs
 	counterMining := 0
-	miner := mineSweeper.factory.BuildMiner()
+	miner := mineSweeper.factory.BuildMiner(dimension)
 	for counterMining < numberOfBomb {
-		row, column := miner.SelectField(dimension)
+		row, column := miner.SelectField()
 		err := game.ActivateBomb(row, column)
 		if err != nil {
 			return nil, err
@@ -26,5 +30,5 @@ func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models
 	}
 
 
-	return game
+	return game, nil
 }

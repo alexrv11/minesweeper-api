@@ -1,18 +1,18 @@
 package domain
 
-import "math/rand"
+import (
+	"github.com/deviget/minesweeper-api/src/engine"
+	"math/rand"
+)
 
 
-type MinerStrategy interface {
-	SelectField() (int, int)
-}
 
 type RandomMiner struct {
 	dimension int
-	activeBomb map[string]bool
+	activeBomb [][]bool
 }
 
-func NewRandomMiner(dimension int) MinerStrategy {
+func NewRandomMiner(dimension int) engine.MinerStrategy {
 	activeBomb := make([][]bool, dimension)
 	return &RandomMiner{ dimension: dimension, activeBomb:activeBomb}
 }

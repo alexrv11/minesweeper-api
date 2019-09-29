@@ -1,12 +1,13 @@
 package domain
 
-type FactoryEngine interface {
-	BuildMiner(dimension int) MinerStrategy
+import "github.com/deviget/minesweeper-api/src/engine"
+
+//Factory implements the builds methods
+type Factory struct {
+
 }
 
-type Factory interface {
-}
-
-func (factory *Factory) BuildMiner(dimension int) MinerStrategy {
+//BuildMiner builds a miner strategy.
+func (factory *Factory) BuildMiner(dimension int) engine.MinerStrategy {
 	return NewRandomMiner(dimension)
 }
