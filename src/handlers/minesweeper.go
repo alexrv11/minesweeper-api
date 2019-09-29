@@ -22,7 +22,7 @@ func (minesweeper *Minesweeper) HandlerMinesweeper(c *gin.Context) {
 		return
 	}
 
-	game, err := minesweeper.CoreEngine.CreateGame(input.Dimension, input.NumberOfBomb)
+	game, _ := minesweeper.CoreEngine.CreateGame(input.Dimension, input.NumberOfBomb)
 
 	c.JSON(http.StatusCreated, game)
 }

@@ -15,5 +15,6 @@ func main() {
 
 	router := app.StartApplication()
 
-	_ = router.Run(fmt.Sprintf(":%s", configuration.Port))
+	port := fmt.Sprintf(":%s", configuration.Port)
+	_ = router.Run(port)
 }
