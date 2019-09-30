@@ -20,6 +20,7 @@ func LoadConfig() *ApiConfig {
 	} else {
 		// whit this, wee can have the config side by side with the binary: ./config/config.yaml
 		v.AddConfigPath("./configFiles")
+		v.AddConfigPath("../configFiles")
 		if os.Getenv("BASIC_ENV") == "prod" {
 			v.SetConfigName("config.production")
 		} else {
