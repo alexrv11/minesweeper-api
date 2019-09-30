@@ -12,13 +12,13 @@ type GameSuite struct {
 	dimension int
 }
 
-func (suite *GameSuite) SetupSuite(){
+func (suite *GameSuite) SetupTest(){
 	suite.dimension = 4
 	game := NewGame(suite.dimension)
-
 	_ = game.ActivateBomb(1,0)
 	_ = game.ActivateBomb(1,1)
 	_ = game.ActivateBomb(2,0)
+	game.instance.HiddenCells = suite.dimension * suite.dimension - 3 //don't count the bombs
 	suite.game = game
 }
 
@@ -64,7 +64,7 @@ func (suite *GameSuite) TestPlayLuck_SelectBomb() {
 	result, err := suite.game.PlayLuckInCell(1,1)
 
 	assert.Nil(suite.T(), err)
-	assert.True(suite.T(), result.GameOver)
+	assert.Equal(suite.T(), GameOverStatus, result.StatusGame)
 	assert.Equal(suite.T(), 0, len(result.WinPosition))
 
 }
@@ -79,25 +79,53 @@ func (suite *GameSuite) TestPlayLuck_SelectACellConnectedBomb() {
 	result, err := suite.game.PlayLuckInCell(2,1)
 
 	assert.Nil(suite.T(), err)
-	assert.False(suite.T(), result.GameOver)
+	assert.Equal(suite.T(), PlayingStatus, result.StatusGame)
 	assert.Equal(suite.T(), 1, len(result.WinPosition))
 	assert.Equal(suite.T(), 2, result.WinPosition[0].Row)
 	assert.Equal(suite.T(), 1, result.WinPosition[0].Column)
+}
 
+func (suite *GameSuite) TestPlayLuck_WinTheGame() {
+	/*
+		XX10
+		**10
+		*310
+		X100
+	*/
+	expectedHiddenCell := 3
+	result, err := suite.game.PlayLuckInCell(2,3)
+
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), PlayingStatus, result.StatusGame)
+	assert.Equal(suite.T(), 10, len(result.WinPosition))
+	assert.Equal(suite.T(), expectedHiddenCell, suite.game.instance.HiddenCells)
+	assert.False(suite.T(), suite.game.instance.Table[0][0].Visited)
+	assert.False(suite.T(), suite.game.instance.Table[0][1].Visited)
+	assert.False(suite.T(), suite.game.instance.Table[3][0].Visited)
 }
 
 func (suite *GameSuite) TestPlayLuck_SelectSecureCell() {
 	/*
-		2210
+		XX10
 		**10
 		*310
-		1100
+		X100
 	*/
-	result, err := suite.game.PlayLuckInCell(2,3)
+
+	result1, err := suite.game.PlayLuckInCell(2,3)
+	result2, err := suite.game.PlayLuckInCell(0,1)
+	result3, err := suite.game.PlayLuckInCell(0,0)
+	result4, err := suite.game.PlayLuckInCell(3,0)
 
 	assert.Nil(suite.T(), err)
-	assert.False(suite.T(), result.GameOver)
-	assert.Equal(suite.T(), 13, len(result.WinPosition))
+	assert.Equal(suite.T(), PlayingStatus, result1.StatusGame)
+	assert.Equal(suite.T(), 10, len(result1.WinPosition))
+	assert.Equal(suite.T(), PlayingStatus, result2.StatusGame)
+	assert.Equal(suite.T(), 1, len(result2.WinPosition))
+	assert.Equal(suite.T(), PlayingStatus, result3.StatusGame)
+	assert.Equal(suite.T(), 1, len(result3.WinPosition))
+	assert.Equal(suite.T(), WinStatus, result4.StatusGame)
+	assert.Equal(suite.T(), 1, len(result4.WinPosition))
 }
 
 func TestGameSuite(t *testing.T){

@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/deviget/minesweeper-api/src/models"
-	"github.com/pkg/errors"
 	"time"
 )
 
@@ -16,7 +15,7 @@ func NewKVS(cleanInterval time.Duration) *KVS {
 }
 
 func (kvs *KVS) PutGame(game models.Game) error {
-	game.Timer = time.NewTimer(kvs.Duration)
+
 	kvs.Games[game.Id] = &game
 
 
@@ -26,25 +25,12 @@ func (kvs *KVS) PutGame(game models.Game) error {
 func (kvs *KVS) GetGame(id string) (*models.Game, error) {
 	game := kvs.Games[id]
 
-	if Expired(game.Timer) {
-		return nil, errors.New("The game has expired")
-	}
 
 	return game, nil
 }
 
 func (kvs *KVS) PauseGame(id string) bool {
-	game := kvs.Games[id]
+	//game := kvs.Games[id]
 
-	return game.Timer.Stop()
-}
-
-//Expired verifies the time has expired
-func Expired(t *time.Timer) bool {
-	select {
-	case <-t.C:
-		return true
-	default:
-		return false
-	}
+	return true
 }

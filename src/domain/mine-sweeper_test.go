@@ -2,9 +2,12 @@ package domain
 
 import (
 	"github.com/deviget/minesweeper-api/src/domain/mocks"
+	"github.com/deviget/minesweeper-api/src/models"
+	"github.com/deviget/minesweeper-api/src/storage"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"testing"
+	"time"
 )
 
 type MineSweeperSuite struct {
@@ -17,7 +20,9 @@ type MineSweeperSuite struct {
 func (suite *MineSweeperSuite) SetupTest(){
 	suite.minerMock = &mocks.MinerStrategy{}
 	suite.factoryMock = &mocks.Factory{ MinerMock: suite.minerMock }
-	suite.minesweeper = &MineSweeper{ factory: suite.factoryMock }
+
+	kvs := storage.KVS{ Duration:time.Duration(time.Second * 5), Games: make(map[string]*models.Game, 0)}
+	suite.minesweeper = &MineSweeper{ factory: suite.factoryMock, kvs:  kvs}
 }
 
 func (suite *MineSweeperSuite) TestCreateGame(){

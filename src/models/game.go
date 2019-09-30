@@ -6,11 +6,12 @@ import (
 )
 
 type Game struct {
-	Id string
-	Dimension int
-	Table [][]*Cell
-	CreatedAt time.Time
-	Timer *time.Timer
+	Id          string
+	Dimension   int
+	Table       [][]*Cell
+	CreatedAt   time.Time
+	Bombs       int
+	HiddenCells int
 }
 
 
@@ -26,5 +27,5 @@ func NewGame(dimension int) *Game {
 		}
 	}
 
-	return &Game{ Id: id, Table: table, Dimension: dimension, CreatedAt: time.Now() }
+	return &Game{ Id: id, Table: table, Dimension: dimension, CreatedAt: time.Now(), Bombs:0, HiddenCells: 0 }
 }

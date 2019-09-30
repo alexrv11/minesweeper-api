@@ -19,4 +19,6 @@ func LoadResources(router *gin.Engine) {
 	router.POST("/games", gameHandler.HandlerCreateGame)
 
 	router.GET("/games/:id", gameHandler.HandlerGetGame)
+
+	router.POST("/games/:id/play", gameHandler.HandlerPlayGame)
 }

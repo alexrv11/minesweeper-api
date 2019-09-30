@@ -1,6 +1,6 @@
 package models
 
 type PlayResult struct {
-	GameOver bool
+	StatusGame  string
 	WinPosition []Position
 }

@@ -6,6 +6,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+const(
+	GameOverStatus = "StatusGame"
+	PlayingStatus = "Playing"
+	WinStatus = "Win"
+)
+
 type Game struct {
 	instance *models.Game
 }
@@ -22,8 +28,13 @@ func (game *Game) ActivateBomb(row, column int) error {
 		return err
 	}
 
+	if game.instance.Table[row][column].IsBomb {
+		return nil
+	}
+
 	game.instance.Table[row][column].IsBomb = true
 	game.NotifyNeighborCell(row, column)
+	game.instance.Bombs++
 
 	return nil
 }
@@ -48,29 +59,47 @@ func (game *Game) incrementConnectedBomb(row, column int) {
 
 func (game *Game) PlayLuckInCell(row, column int) (*models.PlayResult, error) {
 
+
+	winPosition := make([]models.Position, 0)
+	result := &models.PlayResult{WinPosition: winPosition, StatusGame: PlayingStatus }
+
+	if game.instance.HiddenCells == 0 {
+		result.StatusGame = WinStatus
+		return result, nil
+	}
+
 	err := game.validatePosition(row, column)
 
 	if err != nil {
 		return nil, err
 	}
 
-	winPosition := make([]models.Position, 0)
-	result := &models.PlayResult{WinPosition: winPosition, GameOver: false }
-
 	cell := game.instance.Table[row][column]
 	if cell.IsBomb {
-		result.GameOver = true
+		result.StatusGame = GameOverStatus
 		return result, nil
+	}
+
+	if cell.Visited {
+		return  result, nil
 	}
 
 	if cell.ConnectedBomb > 0 {
 		position := models.Position{Row: row, Column:column}
 		result.WinPosition = append(result.WinPosition, position)
+		game.instance.HiddenCells-- //let's reduce the hidden cell in the game
+		if game.instance.HiddenCells == 0 {
+			result.StatusGame = WinStatus
+		}
+
 		return result, nil
 	}
 
 	//the cell is empty, So we are going to list all the neighbor cell that are not bombs
 	game.expandSecureCells(row, column, result)
+	if game.instance.HiddenCells == 0 {
+		result.StatusGame = WinStatus
+	}
 
 	return result, nil
 }
@@ -91,12 +120,21 @@ func (game *Game) expandSecureCells(row, column int, playResult *models.PlayResu
 	}
 	cell.Visited = true
 	playResult.WinPosition = append(playResult.WinPosition, models.Position{Row:row, Column:column})
+	game.instance.HiddenCells--
+
+	if cell.ConnectedBomb > 0 {
+		return
+	}
 
 	//propagate the secure cells
 	game.expandSecureCells(row - 1, column, playResult)
 	game.expandSecureCells(row, column + 1, playResult)
 	game.expandSecureCells(row + 1, column + 1, playResult)
 	game.expandSecureCells(row, column - 1, playResult)
+	game.expandSecureCells(row-1, column - 1, playResult)
+	game.expandSecureCells(row-1, column + 1, playResult)
+	game.expandSecureCells(row+1, column - 1, playResult)
+	game.expandSecureCells(row+1, column + 1, playResult)
 }
 
 func (game *Game) validatePosition(row, column int) error {
