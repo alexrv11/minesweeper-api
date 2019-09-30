@@ -4,8 +4,16 @@ sequenceDiagram
     participant CoreApi
     Note left of javascriptApp: Given:<br>Dimension: n x n<br>Mines: amount 
     
-    javascriptApp->>mineSweeperSdk: Initialize Game
-    mineSweeperSdk->>CoreApi:  InitializeGame()
+    javascriptApp->>mineSweeperSdk: CreateGame
+    mineSweeperSdk->>CoreApi:  POST /games
+    CoreApi-->>javascriptApp: response
+
+    javascriptApp->>mineSweeperSdk: GetGame(id)
+    mineSweeperSdk->>CoreApi:  GET /games/:idGame
+    CoreApi-->>javascriptApp: response
+
+    javascriptApp->>mineSweeperSdk: Play(idGame)
+    mineSweeperSdk->>CoreApi:  POST /games/:idGame/play
     CoreApi-->>javascriptApp: response
     
     
