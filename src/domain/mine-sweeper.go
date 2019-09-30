@@ -6,7 +6,6 @@ import (
 	"github.com/deviget/minesweeper-api/src/storage"
 )
 
-
 type MineSweeper struct {
 	factory engine.Factory
 	kvs storage.KVS
@@ -18,7 +17,7 @@ func NewMinesweeper(factory engine.Factory, kvs storage.KVS) engine.MineSweeper 
 
 //CreateGame creates a Game instance given dimension of the table n x n and the number of bomb that is going to be added in the table
 func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models.Game, error) {
-	game := models.NewGame(dimension)
+	game := NewGame(dimension)
 
 	//Mining bombs
 	counterMining := 0
@@ -33,9 +32,9 @@ func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models
 		counterMining++
 	}
 
-	_ := mineSweeper.kvs.PutGame(*game)
+	_ = mineSweeper.kvs.PutGame(*game.instance)
 
-	return game, nil
+	return game.instance, nil
 }
 
 

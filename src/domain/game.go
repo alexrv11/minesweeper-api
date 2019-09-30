@@ -1,33 +1,17 @@
-package models
+package domain
 
 import (
 	"fmt"
-	"github.com/google/uuid"
+	"github.com/deviget/minesweeper-api/src/models"
 	"github.com/pkg/errors"
-	"time"
 )
 
 type Game struct {
-	Id string
-	Dimension int
-	Table [][]*Cell
-	CreatedAt time.Time
-	Timer *time.Timer
+	instance *models.Game
 }
 
-//NewGame creates a new instance of Game
-func NewGame(dimension int) *Game {
-
-	id := uuid.New().String()
-	table := make([][]*Cell, dimension)
-	for row := range table {
-		table[row] = make([]*Cell, dimension)
-		for column := range table[row] {
-			table[row][column] = &Cell{ IsBomb: false, ConnectedBomb: 0 }
-		}
-	}
-
-	return &Game{ Id: id, Table: table, Dimension: dimension, CreatedAt: time.Now() }
+func NewGame(dimension int) *Game{
+	return &Game{instance: models.NewGame(dimension)}
 }
 
 func (game *Game) ActivateBomb(row, column int) error {
@@ -38,7 +22,7 @@ func (game *Game) ActivateBomb(row, column int) error {
 		return err
 	}
 
-	game.Table[row][column].IsBomb = true
+	game.instance.Table[row][column].IsBomb = true
 	game.NotifyNeighborCell(row, column)
 
 	return nil
@@ -56,13 +40,13 @@ func (game *Game) NotifyNeighborCell(row, column int) {
 }
 
 func (game *Game) incrementConnectedBomb(row, column int) {
-	if row >= 0 && row < game.Dimension && column >=0 && column < game.Dimension {
-		cell := game.Table[row][column]
+	if row >= 0 && row < game.instance.Dimension && column >=0 && column < game.instance.Dimension {
+		cell := game.instance.Table[row][column]
 		cell.ConnectedBomb += 1
 	}
 }
 
-func (game *Game) PlayLuckInCell(row, column int) (*PlayResult, error) {
+func (game *Game) PlayLuckInCell(row, column int) (*models.PlayResult, error) {
 
 	err := game.validatePosition(row, column)
 
@@ -70,17 +54,17 @@ func (game *Game) PlayLuckInCell(row, column int) (*PlayResult, error) {
 		return nil, err
 	}
 
-	var winPosition := make([]Position, 0)
-	result := &PlayResult{WinPosition: winPosition, GameOver: false }
+	winPosition := make([]models.Position, 0)
+	result := &models.PlayResult{WinPosition: winPosition, GameOver: false }
 
-	cell := game.Table[row][column]
+	cell := game.instance.Table[row][column]
 	if cell.IsBomb {
 		result.GameOver = true
 		return result, nil
 	}
 
 	if cell.ConnectedBomb > 0 {
-		position := Position{Row: row, Column:column}
+		position := models.Position{Row: row, Column:column}
 		result.WinPosition = append(result.WinPosition, position)
 		return result, nil
 	}
@@ -91,7 +75,7 @@ func (game *Game) PlayLuckInCell(row, column int) (*PlayResult, error) {
 	return result, nil
 }
 
-func (game *Game) expandSecureCells(row, column int, playResult *PlayResult) {
+func (game *Game) expandSecureCells(row, column int, playResult *models.PlayResult) {
 
 	err := game.validatePosition(row, column)
 
@@ -100,23 +84,28 @@ func (game *Game) expandSecureCells(row, column int, playResult *PlayResult) {
 		return
 	}
 
-	playResult.WinPosition = append(playResult.WinPosition, Position{row, column})
+	cell := game.instance.Table[row][column]
+
+	if cell.Visited || cell.IsBomb {
+		return
+	}
+
+	playResult.WinPosition = append(playResult.WinPosition, models.Position{Row:row, Column:column})
 
 	//propagate the secure cells
 	game.expandSecureCells(row - 1, column, playResult)
 	game.expandSecureCells(row, column + 1, playResult)
 	game.expandSecureCells(row + 1, column + 1, playResult)
 	game.expandSecureCells(row, column - 1, playResult)
-
 }
 
 func (game *Game) validatePosition(row, column int) error {
-	if row >= game.Dimension {
-		return errors.New(fmt.Sprintf("The row %d is out of the range in the game dimesion %d", row, game.Dimension))
+	if row >= game.instance.Dimension {
+		return errors.New(fmt.Sprintf("The row %d is out of the range in the game dimesion %d", row, game.instance.Dimension))
 	}
 
-	if column >= game.Dimension {
-		return errors.New(fmt.Sprintf("The column %d is out of the range in the game dimesion %d", row, game.Dimension))
+	if column >= game.instance.Dimension {
+		return errors.New(fmt.Sprintf("The column %d is out of the range in the game dimesion %d", row, game.instance.Dimension))
 	}
 
 	return nil
