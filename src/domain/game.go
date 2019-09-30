@@ -89,7 +89,7 @@ func (game *Game) expandSecureCells(row, column int, playResult *models.PlayResu
 	if cell.Visited || cell.IsBomb {
 		return
 	}
-
+	cell.Visited = true
 	playResult.WinPosition = append(playResult.WinPosition, models.Position{Row:row, Column:column})
 
 	//propagate the secure cells
@@ -100,11 +100,11 @@ func (game *Game) expandSecureCells(row, column int, playResult *models.PlayResu
 }
 
 func (game *Game) validatePosition(row, column int) error {
-	if row >= game.instance.Dimension {
+	if row >= game.instance.Dimension || row < 0 {
 		return errors.New(fmt.Sprintf("The row %d is out of the range in the game dimesion %d", row, game.instance.Dimension))
 	}
 
-	if column >= game.instance.Dimension {
+	if column >= game.instance.Dimension || column < 0 {
 		return errors.New(fmt.Sprintf("The column %d is out of the range in the game dimesion %d", row, game.instance.Dimension))
 	}
 

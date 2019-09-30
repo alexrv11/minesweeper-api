@@ -37,5 +37,9 @@ func (mineSweeper *MineSweeper) CreateGame(dimension, numberOfBomb int) (*models
 	return game.instance, nil
 }
 
+func (mineSweeper *MineSweeper) GetGame(id string) (*models.Game, error) {
+	return mineSweeper.kvs.GetGame(id)
+}
+
 
 

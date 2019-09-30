@@ -40,9 +40,9 @@ func (kvs *KVS) PauseGame(id string) bool {
 }
 
 //Expired verifies the time has expired
-func Expired(T *time.Timer) bool {
+func Expired(t *time.Timer) bool {
 	select {
-	case <-T.C:
+	case <-t.C:
 		return true
 	default:
 		return false

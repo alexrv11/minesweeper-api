@@ -16,5 +16,7 @@ func LoadResources(router *gin.Engine) {
 	factory := &domain.Factory{}
 	kvs := storage.KVS{Duration: time.Duration(time.Second*300), Games: map[string]*models.Game{}}
 	gameHandler := handlers.NewMinesweeper(domain.NewMinesweeper(factory, kvs))
-	router.POST("/games", gameHandler.HandlerMinesweeper)
+	router.POST("/games", gameHandler.HandlerCreateGame)
+
+	router.GET("/games/:id", gameHandler.HandlerGetGame)
 }
