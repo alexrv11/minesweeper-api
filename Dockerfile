@@ -24,4 +24,4 @@ EXPOSE 8080
 RUN ls /go/bin/
 
 # Command to run the executable
-CMD ["/go/bin/minesweeper-api"]
+CMD ["/go/bin/src"]
