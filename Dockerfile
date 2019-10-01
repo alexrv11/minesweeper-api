@@ -23,5 +23,5 @@ RUN go install /go/src/github.com/deviget/minesweeper-api/src
 EXPOSE 8080
 RUN ls /go/bin/
 
-# Command to run the executable
+# Command to run the executable, TODO: improve name binanry app's name
 CMD ["/go/bin/src"]
