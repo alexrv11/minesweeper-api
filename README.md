@@ -55,5 +55,38 @@ curl -X POST \
 }'
 ```
 
+### Get Started
+
+Let's clone this project in your local enviromnent
+```
+#run this command to create if the directory does not exist.
+mkdir -p $GOPATH/github.com/deviget
+
+cd $GOPATH/github.com/deviget
+
+git clone https://github.com/alexrv11/minesweeper-api.git
+
+cd minesweeper-api
+
+
+```
+1. Running using `docker-compose. if you need have installed docker and docker compose. See <a href="https://docs.docker.com/install/" _blank>docker install</a> and <a href="https://docs.docker.com/compose/install/" _blank>docker compose</a>
+
+```
+  docker-compose build
+  docker-compose up
+
+  #The app is running on localhost:8080
+
+```
+
+2. Running using command line
+
+```
+#Go inside the project minesweeper-api/src
+go run main.go
+```
+
+
 
 
