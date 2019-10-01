@@ -16,7 +16,7 @@ COPY . /go/src/deviget/minesweeper-api
 
 
 # Build the Go app
-RUN go install /go/src/deviget/minesweeper-api
+RUN go install /go/src/deviget/minesweeper-api/src
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
